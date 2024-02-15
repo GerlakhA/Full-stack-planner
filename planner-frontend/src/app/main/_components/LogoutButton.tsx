@@ -1,6 +1,6 @@
 'use client'
 
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
@@ -8,11 +8,15 @@ import { authService } from '@/services/auth.service'
 
 export function LogoutButton() {
 	const router = useRouter()
+	const client = useQueryClient()
 
 	const { mutate } = useMutation({
 		mutationKey: ['logout'],
 		mutationFn: () => authService.logout(),
-		onSuccess: () => router.push('/auth')
+		onSuccess: () => {
+			client.invalidateQueries()
+			router.push('/auth')
+		}
 	})
 
 	return (
