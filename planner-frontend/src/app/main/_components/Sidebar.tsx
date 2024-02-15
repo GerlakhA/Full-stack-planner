@@ -10,7 +10,7 @@ export const Sidebar = () => {
 		<aside className='text-white h-full flex flex-col justifty-between border-r border-r-border'>
 			<div>
 				<Link
-					href={'/'}
+					href={'/main'}
 					draggable={false}
 					className='flex items-center gap-2.5 p-layout border-b border-b-border'
 				>
