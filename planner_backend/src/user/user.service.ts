@@ -83,6 +83,10 @@ export class UserService {
 			}
 		})
 
+		const TimeBlockTask = await this.prisma.timeBlock.count({
+			where: { userId: id }
+		})
+
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const { password, ...rest } = profile
 
@@ -95,7 +99,8 @@ export class UserService {
 				{ label: 'Week tasks', value: weekTasks },
 				{ label: 'High priority tasks', value: highPriorityTask },
 				{ label: 'Medium priority tasks', value: mediumPriorityTask },
-				{ label: 'Low priority tasks', value: lowPriorityTask }
+				{ label: 'Low priority tasks', value: lowPriorityTask },
+				{ label: 'Time-block tasks', value: TimeBlockTask }
 			]
 		}
 	}
