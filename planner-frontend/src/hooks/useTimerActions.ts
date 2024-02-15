@@ -40,8 +40,8 @@ export function useTimerActions({
 		updateRound({
 			id: activeRound?.id,
 			data: {
-				isCompleted: true,
-				totalSeconds: workInterval * 60
+				totalSeconds: workInterval * 60,
+				isCompleted: true
 			}
 		})
 	}
@@ -55,7 +55,7 @@ export function useTimerActions({
 			id: lastCompletedRound?.id,
 			data: {
 				isCompleted: false,
-				totalSeconds: 0
+				totalSeconds: workInterval * 60
 			}
 		})
 
