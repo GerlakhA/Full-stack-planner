@@ -53,13 +53,13 @@ export function SingleSelect({
 			</button>
 			{value && (
 				<button
-					className='absolute top-0 right-0 opacity-30 hover:opacity-100 transition-opacity'
+					className='absolute top-0 -right-4 opacity-30 hover:opacity-100 transition-opacity'
 					onClick={e => {
 						e.preventDefault()
 						onChange('')
 					}}
 				>
-					<X size={14} />
+					<X size={20} />
 				</button>
 			)}
 			{isShow && (
