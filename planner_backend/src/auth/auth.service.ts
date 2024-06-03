@@ -15,27 +15,28 @@ import { AuthDto } from './dto/auth.dto'
 export class AuthService {
 	EXPIRE_DAY_REFRESH_TOKEN = 1
 	REFRESH_TOKEN_NAME = 'refreshToken'
-
 	constructor(
-		private prisma: PrismaService,
 		private jwt: JwtService,
+		private prisma: PrismaService,
 		private userService: UserService
 	) {}
 
 	async login(dto: AuthDto) {
 		const { password, ...user } = await this.validateUser(dto)
-		const tokens = await this.issueTokens(user.id)
+
+		const tokens = this.issueTokens(user.id)
 
 		return { user, ...tokens }
 	}
 
 	async register(dto: AuthDto) {
-		const existingUser = this.userService.getByEmail(dto.email)
+		const existUser = await this.userService.getByEmail(dto.email)
 
-		if (!existingUser) throw new BadRequestException('User already exists')
+		if (existUser) throw new BadRequestException('User already exist')
 
 		const { password, ...user } = await this.userService.create(dto)
-		const tokens = await this.issueTokens(user.id)
+
+		const tokens = this.issueTokens(user.id)
 
 		return { user, ...tokens }
 	}
@@ -50,6 +51,7 @@ export class AuthService {
 		const refreshToken = this.jwt.sign(data, {
 			expiresIn: '7d'
 		})
+
 		return { accessToken, refreshToken }
 	}
 
@@ -58,21 +60,24 @@ export class AuthService {
 
 		if (!user) throw new NotFoundException('User not found')
 
-		const isValid = verify(user.password, dto.password)
+		const isValid = await verify(user.password, dto.password)
+
+		if (!isValid) throw new UnauthorizedException('Invalid password')
 
 		return user
 	}
 
 	addRefreshTokentoResponse(res: Response, refreshToken: string) {
 		const expiresIn = new Date()
+
 		expiresIn.setDate(expiresIn.getDate() + this.EXPIRE_DAY_REFRESH_TOKEN)
 
 		res.cookie(this.REFRESH_TOKEN_NAME, refreshToken, {
 			httpOnly: true,
 			domain: 'localhost',
 			expires: expiresIn,
-			sameSite: 'none',
-			secure: true
+			secure: true,
+			sameSite: 'none'
 		})
 	}
 
@@ -80,7 +85,7 @@ export class AuthService {
 		const expiresIn = new Date()
 		expiresIn.setDate(expiresIn.getDate() + this.EXPIRE_DAY_REFRESH_TOKEN)
 
-		res.cookie(this.REFRESH_TOKEN_NAME, {
+		res.cookie(this.REFRESH_TOKEN_NAME, '', {
 			httpOnly: true,
 			domain: 'localhost',
 			expires: new Date(0),
